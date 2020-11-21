@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'DeepLinking'
-  s.version               = '1.0.0'
+  s.version               = '1.1.0'
   s.summary               = 'A simple way to add custom DeepLinks support to the Swift app'
   s.homepage              = 'https://github.com/SkafferTeam/DeepLinking'
   s.license               = { type: 'MIT', file: 'LICENSE' }
