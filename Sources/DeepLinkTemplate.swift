@@ -83,6 +83,63 @@ public struct DeepLinkTemplate {
 
 }
 
+// MARK: - DeepLinkTemplate extension
+extension DeepLinkTemplate {
+
+    // MARK: - Public API
+
+    /// Allows to build an URL from template by providing all required components
+    /// - Parameter scheme: Application URL scheme. Created URL will be prepended with `<scheme>://`
+    /// - Parameter pathValues: Dictionary of values for URL path, described in template
+    /// - Parameter parametersValues: Dictionary of values for URL parameters, described in template
+    public func buildURL(scheme: String,
+                         pathValues: [String: Any] = [:],
+                         parametersValues: [String: Any] = [:]) -> URL? {
+        guard let completedPath = buildPath(pathValues),
+              allRequiredParametersArePassed(parametersValues) else { return nil }
+
+        var urlString = "\(scheme)://\(completedPath)"
+
+        if !parametersValues.isEmpty {
+            let completedParameters = parametersValues.map { "\($0)=\($1)" }.joined(separator: "&")
+            urlString.append("?\(completedParameters)")
+        }
+
+        return URL(string: urlString)
+    }
+
+    // MARK: - Private URL building methods
+    private func buildPath(_ pathValues: [String: Any]) -> String? {
+        var completedPathParts: [String] = []
+
+        for part in self.pathParts {
+            switch part {
+            case let .term(name):
+                completedPathParts.append(name)
+            case let .int(name), let .bool(name), let .string(name), let .double(name):
+                guard let value = pathValues[name] else { return nil }
+                completedPathParts.append("\(value)")
+            }
+        }
+
+        return completedPathParts.joined(separator: "/")
+    }
+
+    private func allRequiredParametersArePassed(_ parametersValues: [String: Any]) -> Bool {
+        for parameter in self.parameters {
+            switch parameter {
+            case let .requiredInt(name), let .requiredBool(name), let .requiredDouble(name), let .requiredString(name):
+                guard parametersValues.keys.contains(name) else { return false }
+            default:
+                continue
+            }
+        }
+
+        return true
+    }
+
+}
+
 // MARK: - QueryStringParameter extension
 extension DeepLinkTemplate.QueryStringParameter: Hashable, Equatable {
 
