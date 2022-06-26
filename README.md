@@ -4,7 +4,7 @@ A simple way to add custom DeepLinks support to the Swift app
 
 ## Author
 
-Egor Iskrenkov, e.iskrenkov@gmail.com
+Egor Iskrenkov, egor@iskrenkov.me
 
 ## License
 
